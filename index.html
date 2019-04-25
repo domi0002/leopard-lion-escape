@@ -65,11 +65,17 @@ function updateGameArea() {
     if ((leopard.x - 600) * (leopard.x - 600) +
         (leopard.y - 600) * (leopard.y - 600) < 500 * 500)
     {
-        if (myGameArea.keyPressed[37] && !myGameArea.keyPressed[39])
-            leopard.angle -= Math.PI * 0.01;
-        if (myGameArea.keyPressed[39] && !myGameArea.keyPressed[37])
-            leopard.angle += Math.PI * 0.01;
-        if (myGameArea.keyPressed[32]) {
+        // if (myGameArea.keyPressed[37] && !myGameArea.keyPressed[39])
+        //     leopard.angle -= Math.PI * 0.01;
+        // if (myGameArea.keyPressed[39] && !myGameArea.keyPressed[37])
+        //     leopard.angle += Math.PI * 0.01;
+        // if (myGameArea.keyPressed[32]) {
+        //     leopard.x += 0.2 * Math.cos(leopard.angle);
+        //     leopard.y += 0.2 * Math.sin(leopard.angle);
+        // }
+        if (myGameArea.targetMode != null) {
+            leopard.angle = Math.atan2(myGameArea.target.y - leopard.y,
+                                       myGameArea.target.x - leopard.x);
             leopard.x += 0.2 * Math.cos(leopard.angle);
             leopard.y += 0.2 * Math.sin(leopard.angle);
         }
@@ -94,6 +100,8 @@ function updateGameArea() {
 
 var myGameArea = {
     keyPressed : {},
+    targetMode : null,
+    target : null,
     canvas : document.createElement("canvas"),
     start : function() {
         this.canvas.width =1200; 
@@ -107,6 +115,65 @@ var myGameArea = {
         window.addEventListener('keyup', function (e) {
             myGameArea.keyPressed[e.keyCode] = false;
         });
+        this.canvas.addEventListener('mousedown', function(event) {
+            myGameArea.targetMode = 'mouse';
+            var rect = myGameArea.canvas.getBoundingClientRect(), // abs. size of element
+                    scaleX = myGameArea.canvas.width / rect.width,    // relationship bitmap vs. element for X
+                    scaleY = myGameArea.canvas.height / rect.height;  // relationship bitmap vs. element for Y
+            myGameArea.target = {
+                    x: (event.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+                    y: (event.clientY - rect.top) * scaleY     // been adjusted to be relative to element
+            }
+            event.preventDefault();
+        }, false);
+        this.canvas.addEventListener('mouseup', function(event) {
+            if (myGameArea.targetMode == 'mouse') {
+                myGameArea.targetMode = null;
+            }
+            event.preventDefault();
+        }, false);
+        this.canvas.addEventListener('mousemove', function(event) {
+            if (myGameArea.targetMode == 'mouse') {
+                var rect = myGameArea.canvas.getBoundingClientRect(), // abs. size of element
+                        scaleX = myGameArea.canvas.width / rect.width,    // relationship bitmap vs. element for X
+                        scaleY = myGameArea.canvas.height / rect.height;  // relationship bitmap vs. element for Y
+                myGameArea.target = {
+                        x: (event.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+                        y: (event.clientY - rect.top) * scaleY     // been adjusted to be relative to element
+                }
+            }
+            event.preventDefault();
+        }, false);
+        this.canvas.addEventListener('touchstart', function(event) {
+            myGameArea.targetMode = 'touch';
+            var rect = myGameArea.canvas.getBoundingClientRect(), // abs. size of element
+                    scaleX = myGameArea.canvas.width / rect.width,    // relationship bitmap vs. element for X
+                    scaleY = myGameArea.canvas.height / rect.height;  // relationship bitmap vs. element for Y
+            myGameArea.target = {
+                    x: (event.touches[0].clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+                    y: (event.touches[0].clientY - rect.top) * scaleY     // been adjusted to be relative to element
+            }
+            event.preventDefault();
+        }, false);
+        this.canvas.addEventListener('touchend', function(event) {
+            if (myGameArea.targetMode == 'touch') {
+                myGameArea.targetMode = null;
+            }
+            event.preventDefault();
+        }, false);
+        this.canvas.addEventListener('touchmove', function(event) {
+            if (myGameArea.targetMode == 'touch') {
+                var rect = myGameArea.canvas.getBoundingClientRect(), // abs. size of element
+                        scaleX = myGameArea.canvas.width / rect.width,    // relationship bitmap vs. element for X
+                        scaleY = myGameArea.canvas.height / rect.height;  // relationship bitmap vs. element for Y
+                myGameArea.target = {
+                        x: (event.touches[0].clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+                        y: (event.touches[0].clientY - rect.top) * scaleY     // been adjusted to be relative to element
+                }
+            }
+            event.preventDefault();
+        }, false);
+
     },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -115,7 +182,7 @@ var myGameArea = {
 
 </script>
 
-<p>Escape the pond without being caught by the lion!  (left-right-space)</p>
+<p>Escape the pond without being caught by the lion!  (mouse or touch)</p>
 
 </body>
 </html>
