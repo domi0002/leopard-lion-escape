@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+canvas {
+    border: 1px solid #d3d3d3;
+    background-color: #f1f1f1;
+}
+</style>
+</head>
+<body onload="startGame()">
+<script>
+
+function startGame() {
+    myGameArea.start();
+    lion = new component(600, 100, 10, Math.PI / 2, "red");
+    leopard = new component(600, 600, 8, -Math.PI / 2, "green");
+}
+
+function component(x, y, r, angle, color) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.angle = angle;
+    this.update = function(){
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.arc(this.x, this.y, this.r, this.angle + Math.PI / 6,
+                                        this.angle + Math.PI * 11/ 6);
+        ctx.lineTo(this.x, this.y);
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
+function updateGameArea() {
+    myGameArea.clear();
+    ctx = myGameArea.context;
+    ctx.beginPath();
+    ctx.fillStyle = '#b0e0ff';
+    ctx.arc(600, 600, 500, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.arc(600, 600, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(100, 600);
+    ctx.lineTo(1100, 600);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(600, 100);
+    ctx.lineTo(600, 1100);
+    ctx.stroke();
+    for (var r = 100; r <= 500; r += 100) {
+        ctx.beginPath();
+        ctx.arc(600, 600, r, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    if ((leopard.x - 600) * (leopard.x - 600) +
+        (leopard.y - 600) * (leopard.y - 600) < 500 * 500)
+    {
+        if (myGameArea.keyPressed[37] && !myGameArea.keyPressed[39])
+            leopard.angle -= Math.PI * 0.01;
+        if (myGameArea.keyPressed[39] && !myGameArea.keyPressed[37])
+            leopard.angle += Math.PI * 0.01;
+        if (myGameArea.keyPressed[32]) {
+            leopard.x += 0.2 * Math.cos(leopard.angle);
+            leopard.y += 0.2 * Math.sin(leopard.angle);
+        }
+
+        var angLeop = Math.atan2(leopard.y - 600, leopard.x - 600);
+        var angLion = Math.atan2(lion.y - 600, lion.x - 600);
+        if ((angLeop - angLion + Math.PI * 2) % (Math.PI * 2) > Math.PI) {
+            angLion -= 0.8 / 500;
+            lion.angle = angLion - Math.PI / 2;
+        }
+        else {
+            angLion += 0.8 / 500;
+            lion.angle = angLion + Math.PI / 2;
+        }
+        lion.x = 600 + 500 * Math.cos(angLion);
+        lion.y = 600 + 500 * Math.sin(angLion);
+    }
+
+    leopard.update();
+    lion.update();
+}
+
+var myGameArea = {
+    keyPressed : {},
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width =1200; 
+        this.canvas.height = 1200;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGameArea, 10);
+        window.addEventListener('keydown', function (e) {
+            myGameArea.keyPressed[e.keyCode] = true;
+        });
+        window.addEventListener('keyup', function (e) {
+            myGameArea.keyPressed[e.keyCode] = false;
+        });
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+</script>
+
+<p>We have created a game area! (or at least an empty canvas)</p>
+
+</body>
+</html>
