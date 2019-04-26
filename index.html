@@ -14,8 +14,8 @@ canvas {
 
 function startGame() {
     myGameArea.start();
-    lion = new component(600, 100, 10, Math.PI / 2, "red");
-    leopard = new component(600, 600, 8, -Math.PI / 2, "green");
+    lion = new component(300, 50, 5, Math.PI / 2, "red");
+    leopard = new component(300, 300, 4, -Math.PI / 2, "green");
 }
 
 function component(x, y, r, angle, color) {
@@ -41,38 +41,30 @@ function updateGameArea() {
     ctx = myGameArea.context;
     ctx.beginPath();
     ctx.fillStyle = '#b0e0ff';
-    ctx.arc(600, 600, 500, 0, Math.PI * 2);
+    ctx.arc(300, 300, 250, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = 'black';
     ctx.beginPath();
-    ctx.arc(600, 600, 5, 0, Math.PI * 2);
+    ctx.arc(300, 300, 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = 'black';
     ctx.beginPath();
-    ctx.moveTo(100, 600);
-    ctx.lineTo(1100, 600);
+    ctx.moveTo(50, 300);
+    ctx.lineTo(550, 300);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(600, 100);
-    ctx.lineTo(600, 1100);
+    ctx.moveTo(300, 50);
+    ctx.lineTo(300, 550);
     ctx.stroke();
-    for (var r = 100; r <= 500; r += 100) {
+    for (var r = 50; r <= 250; r += 50) {
         ctx.beginPath();
-        ctx.arc(600, 600, r, 0, Math.PI * 2);
+        ctx.arc(300, 300, r, 0, Math.PI * 2);
         ctx.stroke();
     }
 
-    if ((leopard.x - 600) * (leopard.x - 600) +
-        (leopard.y - 600) * (leopard.y - 600) < 500 * 500)
+    if ((leopard.x - 300) * (leopard.x - 300) +
+        (leopard.y - 300) * (leopard.y - 300) < 250 * 250)
     {
-        // if (myGameArea.keyPressed[37] && !myGameArea.keyPressed[39])
-        //     leopard.angle -= Math.PI * 0.01;
-        // if (myGameArea.keyPressed[39] && !myGameArea.keyPressed[37])
-        //     leopard.angle += Math.PI * 0.01;
-        // if (myGameArea.keyPressed[32]) {
-        //     leopard.x += 0.2 * Math.cos(leopard.angle);
-        //     leopard.y += 0.2 * Math.sin(leopard.angle);
-        // }
         if (myGameArea.targetMode != null) {
             leopard.angle = Math.atan2(myGameArea.target.y - leopard.y,
                                        myGameArea.target.x - leopard.x);
@@ -80,18 +72,18 @@ function updateGameArea() {
             leopard.y += 0.2 * Math.sin(leopard.angle);
         }
 
-        var angLeop = Math.atan2(leopard.y - 600, leopard.x - 600);
-        var angLion = Math.atan2(lion.y - 600, lion.x - 600);
+        var angLeop = Math.atan2(leopard.y - 300, leopard.x - 300);
+        var angLion = Math.atan2(lion.y - 300, lion.x - 300);
         if ((angLeop - angLion + Math.PI * 2) % (Math.PI * 2) > Math.PI) {
-            angLion -= 0.8 / 500;
+            angLion -= 0.8 / 250;
             lion.angle = angLion - Math.PI / 2;
         }
         else {
-            angLion += 0.8 / 500;
+            angLion += 0.8 / 250;
             lion.angle = angLion + Math.PI / 2;
         }
-        lion.x = 600 + 500 * Math.cos(angLion);
-        lion.y = 600 + 500 * Math.sin(angLion);
+        lion.x = 300 + 250 * Math.cos(angLion);
+        lion.y = 300 + 250 * Math.sin(angLion);
     }
 
     leopard.update();
@@ -104,8 +96,8 @@ var myGameArea = {
     target : null,
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width =1200; 
-        this.canvas.height = 1200;
+        this.canvas.width = 600; 
+        this.canvas.height = 600;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.interval = setInterval(updateGameArea, 10);
