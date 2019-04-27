@@ -4,8 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <style>
 canvas {
-    border: 1px solid #d3d3d3;
-    background-color: #f1f1f1;
+    border: 0px solid #d3d3d3;
+    background-color: #f1fff1;
 }
 </style>
 <title>Leopard-Lion</title>
@@ -66,8 +66,8 @@ function updateGameArea() {
     if ((leopard.x - 300) * (leopard.x - 300) +
         (leopard.y - 300) * (leopard.y - 300) < 250 * 250)
     {
-        var leopSpeed = 0.2;
-        var lionSpeed = 0.8;
+        var leopSpeed = 0.3;
+        var lionSpeed = 1.2;
         if (myGameArea.targetMode != null) {
             leopard.angle = Math.atan2(myGameArea.target.y - leopard.y,
                                        myGameArea.target.x - leopard.x);
@@ -94,7 +94,7 @@ function updateGameArea() {
         lion.y = 300 + 250 * Math.sin(angLion);
     }
     else if ((leopard.x - lion.x) * (leopard.x - lion.x) +
-             (leopard.y - lion.y) * (leopard.y - lion.y) < 2)
+             (leopard.y - lion.y) * (leopard.y - lion.y) < 25)
     {
         var text = document.getElementById('text');
         text.innerHTML = "You are eatern by the lion.";
@@ -118,12 +118,6 @@ var myGameArea = {
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.interval = setInterval(updateGameArea, 10);
-        window.addEventListener('keydown', function (e) {
-            myGameArea.keyPressed[e.keyCode] = true;
-        });
-        window.addEventListener('keyup', function (e) {
-            myGameArea.keyPressed[e.keyCode] = false;
-        });
         this.canvas.addEventListener('mousedown', function(event) {
             myGameArea.targetMode = 'mouse';
             var rect = myGameArea.canvas.getBoundingClientRect(), // abs. size of element
