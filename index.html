@@ -63,14 +63,50 @@ function updateGameArea() {
         ctx.stroke();
     }
 
-    if ((leopard.x - 300) * (leopard.x - 300) +
+    // Escape directly perpendicular to the arc if we are just above the 150 mark.
+    if (((leopard.x - 300) * (leopard.x - 300) +
+        (leopard.y - 300) * (leopard.y - 300)) > 150*150 && ((leopard.x - 300) * (leopard.x - 300) +
+        (leopard.y - 300) * (leopard.y - 300)) <= 250*250)
+    {
+        var leopSpeed = 0.38;
+        var lionSpeed = 1.2;
+        if (myGameArea.targetMode != null) {
+            // Just proceed perpendicular to the circular arc.
+            var angLionLocalNew =  Math.atan2(leopard.y - 300, leopard.x - 300);
+            leopard.angle = angLionLocalNew;                      
+            leopard.x += leopSpeed * Math.cos(leopard.angle);
+            leopard.y += leopSpeed * Math.sin(leopard.angle);
+        }
+
+        var angLeop = Math.atan2(leopard.y - 300, leopard.x - 300);
+        var angLion = Math.atan2(lion.y - 300, lion.x - 300);
+        var angDelta = (angLion - angLeop + Math.PI * 3) % (Math.PI * 2) - Math.PI;
+        if (angDelta > lionSpeed / 250) {
+            angLion -= lionSpeed / 250;
+            lion.angle = angLion - Math.PI / 2;
+        }
+        else if (angDelta < -lionSpeed / 250){
+            angLion += lionSpeed / 250;
+            lion.angle = angLion + Math.PI / 2;
+        }
+        else {
+            angLion = angLeop;
+            lion.angle = angLion + (1 + angDelta / lionSpeed * 250 / 2) * Math.PI;
+        }
+        lion.x = 300 + 250 * Math.cos(angLion);
+        lion.y = 300 + 250 * Math.sin(angLion);
+    }
+    else if ((leopard.x - 300) * (leopard.x - 300) +
         (leopard.y - 300) * (leopard.y - 300) < 250 * 250)
     {
         var leopSpeed = 0.38;
         var lionSpeed = 1.2;
         if (myGameArea.targetMode != null) {
-            leopard.angle = Math.atan2(myGameArea.target.y - leopard.y,
-                                       myGameArea.target.x - leopard.x);
+            // Diametrically opposite position of the lion.
+            var angLionLocalNew =  Math.PI-Math.atan2(lion.y - 300, lion.x - 300);
+            // Choose the angle to march directly oppposite.
+            leopard.angle = -angLionLocalNew;
+            //leopard.angle = Math.atan2(myGameArea.target.y - leopard.y, myGameArea.target.x - leopard.x);
             leopard.x += leopSpeed * Math.cos(leopard.angle);
             leopard.y += leopSpeed * Math.sin(leopard.angle);
         }
@@ -99,7 +135,8 @@ function updateGameArea() {
         var text = document.getElementById('text');
         text.innerHTML = "You are eatern by the lion.";
     }
-    else {
+    else if  ((leopard.x - 300) * (leopard.x - 300) +
+    (leopard.y - 300) * (leopard.y - 300) > 250 * 250) {
         var text = document.getElementById('text');
         text.innerHTML = "Congratulations! You are free.";
     }
